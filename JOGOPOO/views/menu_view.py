@@ -56,3 +56,12 @@ class MenuView(arcade.View):
             22,
             anchor_x="center"
         )
+
+    def on_key_press(self, key, modifiers):
+
+        if key == arcade.key.I:
+            from views.instruction_view import InstructionView
+            self.window.show_view(InstructionView())
+
+        elif key == arcade.key.ESCAPE:
+            arcade.exit()
