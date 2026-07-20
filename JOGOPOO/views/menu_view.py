@@ -63,5 +63,9 @@ class MenuView(arcade.View):
             from views.instruction_view import InstructionView
             self.window.show_view(InstructionView())
 
+        elif key == arcade.key.S:
+            from views.about_view import AboutView
+            self.window.show_view(AboutView())
+
         elif key == arcade.key.ESCAPE:
             arcade.exit()
