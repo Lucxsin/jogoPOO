@@ -59,13 +59,21 @@ class MenuView(arcade.View):
 
     def on_key_press(self, key, modifiers):
 
-        if key == arcade.key.I:
+        # Jogar
+        if key == arcade.key.J:
+            from views.game_view import GameView
+            self.window.show_view(GameView())
+
+        # Instruções
+        elif key == arcade.key.I:
             from views.instruction_view import InstructionView
             self.window.show_view(InstructionView())
 
+        # Sobre
         elif key == arcade.key.S:
             from views.about_view import AboutView
             self.window.show_view(AboutView())
 
+        # Sair
         elif key == arcade.key.ESCAPE:
             arcade.exit()
