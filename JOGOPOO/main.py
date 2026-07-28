@@ -1,11 +1,8 @@
 import arcade
 
+from config import LARGURA, ALTURA, TITULO  
 from views.menu_view import MenuView
 
-# Configurações da janela
-LARGURA = 800
-ALTURA = 600
-TITULO = "Meu Jogo"
 
 
 def main():

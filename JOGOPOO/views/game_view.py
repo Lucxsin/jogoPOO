@@ -1,11 +1,7 @@
 import arcade
 
-# Tamanho da tela
-LARGURA = 800
-ALTURA = 600
-
-# Velocidade do jogador
-VELOCIDADE = 5
+from config import LARGURA, ALTURA
+from classes.jogador import Player  
 
 
 class GameView(arcade.View):
@@ -13,77 +9,65 @@ class GameView(arcade.View):
     def __init__(self):
         super().__init__()
 
-        # Carrega o cenário
-        self.background = arcade.load_texture("sprites/cenario.jpg")
+        # Lista de sprites do cenário
+        self.background_list = arcade.SpriteList()
 
-        # Carrega as texturas do jogador
-        self.player_baixo = arcade.load_texture("sprites/gb_baixo.png")
-        self.player_cima = arcade.load_texture("sprites/gb_atras.png")
-        self.player_esquerda = arcade.load_texture("sprites/gb_esquerda.png")
-        self.player_direita = arcade.load_texture("sprites/gb_direita.png")
+        # Sprite do cenário
+        background = arcade.Sprite("sprites/cenario.jpg")
+
+        #Centraliza o cenário na tela
+        background.center_x = LARGURA / 2
+        background.center_y = ALTURA / 2
+
+        #Ajusta o tamanho do cenário para preencher a tela
+        background.width = LARGURA
+        background.height = ALTURA
+
+        # Adiciona o cenário na lista
+        self.background_list.append(background)
+
+       # Lista do jogador
+        self.player_list = arcade.SpriteList()
 
         # Cria o jogador
-        self.player = arcade.Sprite()
+        self.player = Player()
 
-        self.player.texture = self.player_baixo
-        self.player.center_x = 400
-        self.player.center_y = 300
+        # Adiciona na lista
+        self.player_list.append(self.player)
 
     def on_draw(self):
 
         self.clear()
 
-        arcade.draw_lrwh_rectangle_textured(
-            0,
-            0,
-            LARGURA,
-            ALTURA,
-            self.background
-        )
+        self.background_list.draw()
 
-        self.player.draw()
+        self.player_list.draw()
+
+       
 
     def on_update(self, delta_time):
-
-        self.player.center_x += self.player.change_x
-        self.player.center_y += self.player.change_y
-
-        # Limites da tela
-
-        if self.player.left < 0:
-            self.player.left = 0
-
-        if self.player.right > LARGURA:
-            self.player.right = LARGURA
-
-        if self.player.bottom < 0:
-            self.player.bottom = 0
-
-        if self.player.top > ALTURA:
-            self.player.top = ALTURA
+        self.player_list.update()
 
     def on_key_press(self, key, modifiers):
 
         if key == arcade.key.LEFT:
-            self.player.change_x = -VELOCIDADE
-            self.player.texture = self.player_esquerda
+            self.player.mover_esquerda()
 
         elif key == arcade.key.RIGHT:
-            self.player.change_x = VELOCIDADE
-            self.player.texture = self.player_direita
+            self.player.mover_direita()
 
         elif key == arcade.key.UP:
-            self.player.change_y = VELOCIDADE
-            self.player.texture = self.player_cima
+            self.player.mover_cima()
 
         elif key == arcade.key.DOWN:
-            self.player.change_y = -VELOCIDADE
-            self.player.texture = self.player_baixo
+            self.player.mover_baixo()
 
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player.change_x = 0
+            self.player.parar_horizontal()
 
         if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player.change_y = 0
+            self.player.parar_vertical()
+
+    
