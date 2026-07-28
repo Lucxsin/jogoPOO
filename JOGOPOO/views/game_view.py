@@ -1,7 +1,8 @@
 import arcade
 
 from config import LARGURA, ALTURA
-from classes.jogador import Player  
+from classes.jogador import Player
+from classes.vitamina import Vitamina
 
 
 class GameView(arcade.View):
@@ -9,44 +10,57 @@ class GameView(arcade.View):
     def __init__(self):
         super().__init__()
 
-        # Lista de sprites do cenário
+        # Fundo
         self.background_list = arcade.SpriteList()
 
-        # Sprite do cenário
         background = arcade.Sprite("sprites/cenario.jpg")
-
-        #Centraliza o cenário na tela
         background.center_x = LARGURA / 2
         background.center_y = ALTURA / 2
-
-        #Ajusta o tamanho do cenário para preencher a tela
         background.width = LARGURA
         background.height = ALTURA
 
-        # Adiciona o cenário na lista
         self.background_list.append(background)
 
-       # Lista do jogador
+        # Jogador
         self.player_list = arcade.SpriteList()
-
-        # Cria o jogador
         self.player = Player()
-
-        # Adiciona na lista
         self.player_list.append(self.player)
 
-    def on_draw(self):
+        # Vitaminas
+        self.vitamina_list = arcade.SpriteList()
 
+        for _ in range(10):
+            self.vitamina_list.append(Vitamina())
+
+        # Pontuação
+        self.pontos = 0
+
+    def on_draw(self):
         self.clear()
 
         self.background_list.draw()
-
+        self.vitamina_list.draw()
         self.player_list.draw()
 
-       
+        arcade.draw_text(
+            f"Pontos: {self.pontos}",
+            20,
+            ALTURA - 30,
+            arcade.color.WHITE,
+            20
+        )
 
     def on_update(self, delta_time):
         self.player_list.update()
+
+        vitaminas = arcade.check_for_collision_with_list(
+            self.player,
+            self.vitamina_list
+        )
+
+        for vitamina in vitaminas:
+            vitamina.remove_from_sprite_lists()
+            self.pontos += 1
 
     def on_key_press(self, key, modifiers):
 
@@ -69,5 +83,3 @@ class GameView(arcade.View):
 
         if key == arcade.key.UP or key == arcade.key.DOWN:
             self.player.parar_vertical()
-
-    
