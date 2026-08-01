@@ -1,8 +1,11 @@
+
 import arcade
 
 from config import LARGURA, ALTURA
 from classes.jogador import Player
 from classes.vitamina import Vitamina
+from classes.bacteria import Bacteria
+from views.game_over_view import GameOverView
 
 
 class GameView(arcade.View):
@@ -31,48 +34,83 @@ class GameView(arcade.View):
         self.vitamina_list = arcade.SpriteList()
 
         for i in range(6):
+            self.vitamina_list.append(Vitamina())
 
-            while True:
-                vitamina = Vitamina()
+        # Vírus
+        self.bacteria_list = arcade.SpriteList()
 
-                # Só adiciona se não estiver encostando no jogador
-                if not arcade.check_for_collision(vitamina, self.player):
-                    self.vitamina_list.append(vitamina)
-                    break
+        for i in range(3):
+            self.bacteria_list.append(Bacteria())
 
         # Pontuação
         self.pontos = 0
+
+        # Vida
+        self.vida = 100
 
     def on_draw(self):
 
         self.clear()
 
         self.background_list.draw()
-
         self.vitamina_list.draw()
-
+        self.bacteria_list.draw()
         self.player_list.draw()
 
         arcade.draw_text(
-            f"Vitaminas: {self.pontos}",
+            f"Pontuação: {self.pontos}",
             20,
             560,
             arcade.color.WHITE,
             20
         )
 
+        arcade.draw_text(
+            f"Vida: {self.vida}%",
+            20,
+            530,
+            arcade.color.LIME_GREEN,
+            20
+        )
+
     def on_update(self, delta_time):
 
         self.player_list.update()
+        self.bacteria_list.update()
 
+        # Coleta vitaminas
         vitaminas = arcade.check_for_collision_with_list(
             self.player,
             self.vitamina_list
         )
 
         for vitamina in vitaminas:
+
             vitamina.remove_from_sprite_lists()
+
             self.pontos += 1
+
+            # Cria outra vitamina
+            self.vitamina_list.append(Vitamina())
+
+        # Colisão com vírus
+        virus = arcade.check_for_collision_with_list(
+            self.player,
+            self.bacteria_list
+        )
+
+        if len(virus) > 0:
+
+            self.vida -= 50
+
+            for bacteria in virus:
+                bacteria.remove_from_sprite_lists()
+
+                # Cria outro vírus
+                self.bacteria_list.append(Bacteria())
+
+            if self.vida <= 0:
+                self.window.show_view(GameOverView())
 
     def on_key_press(self, key, modifiers):
 

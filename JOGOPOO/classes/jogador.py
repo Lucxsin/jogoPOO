@@ -1,6 +1,8 @@
 import arcade
 
-from config import LARGURA, ALTURA, VELOCIDADE_JOGADOR
+from config import LARGURA, ALTURA
+
+VELOCIDADE = 5
 
 
 class Player(arcade.Sprite):
@@ -8,49 +10,46 @@ class Player(arcade.Sprite):
     def __init__(self):
         super().__init__()
 
-        # Carrega as texturas
-        self.baixo = arcade.load_texture("sprites/gb_baixo.png")
-        self.cima = arcade.load_texture("sprites/gb_atras.png")
-        self.esquerda = arcade.load_texture("sprites/gb_esquerda.png")
-        self.direita = arcade.load_texture("sprites/gb_direita.png")
+        # Carrega os sprites
+        self.sprite_baixo = arcade.load_texture("sprites/gb_baixo.png")
+        self.sprite_atras = arcade.load_texture("sprites/gb_atras.png")
+        self.sprite_direita = arcade.load_texture("sprites/gb_direita.png")
+        self.sprite_esquerda = arcade.load_texture("sprites/gb_esquerda.png")
 
-        # Textura inicial
-        self.texture = self.baixo
+        # Sprite inicial
+        self.texture = self.sprite_baixo
+
+        # Escala
+        self.scale = 0.15
 
         # Posição inicial
-        self.center_x = LARGURA / 2
-        self.center_y = ALTURA / 2
-
-        # Velocidade inicial
-        self.velocidade = VELOCIDADE_JOGADOR
-
-    #MOVIMENTO
+        self.center_x = LARGURA // 2
+        self.center_y = ALTURA // 2
 
     def mover_esquerda(self):
-        self.change_x = -self.velocidade
-        self.texture = self.esquerda
+        self.change_x = -VELOCIDADE
+        self.texture = self.sprite_esquerda
 
     def mover_direita(self):
-        self.change_x = self.velocidade
-        self.texture = self.direita
+        self.change_x = VELOCIDADE
+        self.texture = self.sprite_direita
 
     def mover_cima(self):
-        self.change_y = self.velocidade
-        self.texture = self.cima
+        self.change_y = VELOCIDADE
+        self.texture = self.sprite_atras
 
     def mover_baixo(self):
-        self.change_y = -self.velocidade
-        self.texture = self.baixo
+        self.change_y = -VELOCIDADE
+        self.texture = self.sprite_baixo
 
-    #PARAR
     def parar_horizontal(self):
         self.change_x = 0
 
     def parar_vertical(self):
         self.change_y = 0
 
-    # Atualiza a posição do jogador
-    def update(self, delta_time):
+    def update(self, delta_time=0):
+
         self.center_x += self.change_x
         self.center_y += self.change_y
 
@@ -66,4 +65,3 @@ class Player(arcade.Sprite):
 
         if self.top > ALTURA:
             self.top = ALTURA
-
