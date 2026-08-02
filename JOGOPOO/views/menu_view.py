@@ -1,4 +1,5 @@
 import arcade
+from config import LARGURA, ALTURA
 
 
 class MenuView(arcade.View):
@@ -6,54 +7,61 @@ class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
 
+         # Fundo do menu
+        self.background_list = arcade.SpriteList()
+
+        background = arcade.Sprite("sprites/menu.jpeg")
+
+        background.center_x = LARGURA / 2
+        background.center_y = ALTURA / 2
+
+        background.width = LARGURA
+        background.height = ALTURA
+
+        self.background_list.append(background)
+
     def on_show_view(self):
-        self.window.background_color = arcade.color.DARK_BLUE
+        self.window.background_color = arcade.color.DARK_RED
 
     def on_draw(self):
         self.clear()
 
-        arcade.draw_text(
-            "MEU JOGO",
-            400,
-            450,
-            arcade.color.WHITE,
-            40,
-            anchor_x="center"
-        )
+        self.background_list.draw()
+
 
         arcade.draw_text(
             "[J] Jogar",
+            450,
             400,
-            300,
             arcade.color.WHITE,
-            22,
+            25,
             anchor_x="center"
         )
 
         arcade.draw_text(
             "[I] Instruções",
-            400,
-            260,
+            450,
+            350,
             arcade.color.WHITE,
-            22,
+            25,
             anchor_x="center"
         )
 
         arcade.draw_text(
             "[S] Sobre",
-            400,
-            220,
+            450,
+            300,
             arcade.color.WHITE,
-            22,
+            25,
             anchor_x="center"
         )
 
         arcade.draw_text(
             "[ESC] Sair",
-            400,
-            180,
+            450,
+            250,
             arcade.color.WHITE,
-            22,
+            25,
             anchor_x="center"
         )
 

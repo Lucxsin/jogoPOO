@@ -7,7 +7,12 @@ from views.menu_view import MenuView
 
 def main():
     # Cria a janela
-    window = arcade.Window(LARGURA, ALTURA, TITULO)
+    window = arcade.Window(
+    LARGURA,
+    ALTURA,
+    TITULO,
+    
+    )
 
     # Abre o menu
     menu = MenuView()

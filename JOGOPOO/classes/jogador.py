@@ -20,7 +20,7 @@ class Player(arcade.Sprite):
         self.texture = self.sprite_baixo
 
         # Escala
-        self.scale = 0.15
+        self.scale = 0.50
 
         # Posição inicial
         self.center_x = LARGURA // 2
