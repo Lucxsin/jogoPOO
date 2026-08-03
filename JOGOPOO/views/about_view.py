@@ -34,7 +34,7 @@ class AboutView(arcade.View):
         self.avatar_list.append(avatar1)
 
 
-        avatar2 = arcade.Sprite("sprites/avatar1.jpeg")
+        avatar2 = arcade.Sprite("sprites/avatar2.jpg")
         avatar2.center_x = 600
         avatar2.center_y = 230
         avatar2.width = 180
@@ -113,7 +113,7 @@ class AboutView(arcade.View):
         # Nomes
 
         arcade.draw_text(
-            "Nome Integrante 1",
+            "Mayra Eloise Lima de Oliveira",
             300,
             130,
             arcade.color.WHITE,
@@ -123,7 +123,7 @@ class AboutView(arcade.View):
 
 
         arcade.draw_text(
-            "Nome Integrante 2",
+            "Lucas Henrique Silva",
             600,
             130,
             arcade.color.WHITE,
