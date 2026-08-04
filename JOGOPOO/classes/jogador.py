@@ -1,8 +1,7 @@
 import arcade
 
-from config import LARGURA, ALTURA
+from config import LARGURA, ALTURA, VELOCIDADE_JOGADOR
 
-VELOCIDADE = 5
 
 
 class Player(arcade.Sprite):
@@ -27,19 +26,19 @@ class Player(arcade.Sprite):
         self.center_y = ALTURA // 2
 
     def mover_esquerda(self):
-        self.change_x = -VELOCIDADE
+        self.change_x = -VELOCIDADE_JOGADOR
         self.texture = self.sprite_esquerda
 
     def mover_direita(self):
-        self.change_x = VELOCIDADE
+        self.change_x = VELOCIDADE_JOGADOR
         self.texture = self.sprite_direita
 
     def mover_cima(self):
-        self.change_y = VELOCIDADE
+        self.change_y = VELOCIDADE_JOGADOR
         self.texture = self.sprite_atras
 
     def mover_baixo(self):
-        self.change_y = -VELOCIDADE
+        self.change_y = -VELOCIDADE_JOGADOR
         self.texture = self.sprite_baixo
 
     def parar_horizontal(self):
