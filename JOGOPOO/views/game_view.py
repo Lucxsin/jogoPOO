@@ -104,7 +104,7 @@ class GameView(arcade.View):
                 "-1 PONTO!",
                 LARGURA // 2,
                 ALTURA - 40,
-                arcade.color.RED,
+                arcade.color.WHITE,
                 24,
                 anchor_x="center"
     )
