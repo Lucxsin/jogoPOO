@@ -7,7 +7,7 @@ class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
 
-         # Fundo do menu
+        # Fundo do menu
         self.background_list = arcade.SpriteList()
 
         background = arcade.Sprite("sprites/menu.jpeg")
@@ -28,7 +28,6 @@ class MenuView(arcade.View):
 
         self.background_list.draw()
 
-
         arcade.draw_text(
             "[J] Jogar",
             450,
@@ -48,7 +47,7 @@ class MenuView(arcade.View):
         )
 
         arcade.draw_text(
-            "[S] Sobre",
+            "[R] Ranking",
             450,
             300,
             arcade.color.WHITE,
@@ -57,9 +56,18 @@ class MenuView(arcade.View):
         )
 
         arcade.draw_text(
-            "[ESC] Sair",
+            "[S] Sobre",
             450,
             250,
+            arcade.color.WHITE,
+            25,
+            anchor_x="center"
+        )
+
+        arcade.draw_text(
+            "[ESC] Sair",
+            450,
+            200,
             arcade.color.WHITE,
             25,
             anchor_x="center"
@@ -76,6 +84,11 @@ class MenuView(arcade.View):
         elif key == arcade.key.I:
             from views.instruction_view import InstructionView
             self.window.show_view(InstructionView())
+
+        # Ranking
+        elif key == arcade.key.R:
+            from views.tela_ranking import TelaRanking
+            self.window.show_view(TelaRanking())
 
         # Sobre
         elif key == arcade.key.S:

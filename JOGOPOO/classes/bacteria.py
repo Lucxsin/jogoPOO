@@ -2,7 +2,7 @@ import arcade
 import random
 import math
 
-from config import LARGURA, ALTURA
+from config import LARGURA, ALTURA, SPAWN_X, SPAWN_Y
 
 
 class Bacteria(arcade.Sprite):

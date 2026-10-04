@@ -32,9 +32,7 @@ class InstructionView(arcade.View):
         # Desenha o fundo
         self.background_list.draw()
 
-
         # Título
-
         arcade.draw_text(
             "INSTRUÇÕES",
             LARGURA // 2,
@@ -44,31 +42,29 @@ class InstructionView(arcade.View):
             anchor_x="center"
         )
 
-
         texto = (
             "OBJETIVO DO JOGO:\n"
-            "Colete todas as vitaminas(+1) e antibióticos(+5)\n"
-            "para alcançar a maior pontuação.\n\n"
+            "Pule pelas plataformas e colete todas as vitaminas(+1)\n"
+            "e antibióticos(+5) para alcançar a maior pontuação.\n\n"
 
             "INIMIGOS:\n"
-            "As bactérias movem-se pelo cenário, cuidado para não colidir\n"
+            "As bactérias voam pelo cenário, cuidado para não colidir:\n"
             "causa perda de 1 ponto.\n"
-            "A super bactéria persegue o jogador e causa perda 1 pontoabout\n ao tocar nele.\n\n"
+            "A super bactéria persegue o jogador e causa perda de 1 ponto\n"
+            "ao tocar nele.\n\n"
 
             "CONTROLES:\n"
-            "W ou ↑  - Mover para cima\n"
-            "S ou ↓  - Mover para baixo\n"
             "A ou ←  - Mover para esquerda\n"
-            "D ou →  - Mover para direita\n\n"
+            "D ou →  - Mover para direita\n"
+            "W, ↑ ou ESPAÇO  - Pular (não existe pulo duplo!)\n\n"
 
             "[M] ou [ESC] - Voltar ao Menu"
         )
 
-
         arcade.draw_text(
             texto,
             LARGURA // 2,
-            ALTURA -145,
+            ALTURA - 145,
             arcade.color.WHITE,
             20,
             anchor_x="center",
