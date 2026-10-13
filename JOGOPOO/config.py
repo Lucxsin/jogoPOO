@@ -18,3 +18,12 @@ TEMPO_FRAME_ANIMACAO = 0.1   # troca de quadro a cada 100 ms
 #Onde o jogador nasce (os inimigos nascem longe daqui)
 SPAWN_X = LARGURA // 2
 SPAWN_Y = TAMANHO_BLOCO + 60
+
+
+# Duração dos efeitos de colisão (em segundos)
+TEMPO_INVENCIVEL = 1.5
+TEMPO_FLASH = 0.3
+TEMPO_TREMOR = 0.35
+
+# Intensidade máxima do tremor, em pixels
+INTENSIDADE_TREMOR = 8

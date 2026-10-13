@@ -9,7 +9,12 @@ from config import (
     FORCA_PULO,
     TAMANHO_BLOCO,
     SPAWN_X,
+    TEMPO_INVENCIVEL,
+    TEMPO_FLASH,
+    TEMPO_TREMOR,
+    INTENSIDADE_TREMOR
 )
+
 from classes.jogador import Player
 from classes.bloco import Bloco
 from classes.vitamina import Vitamina
@@ -17,6 +22,7 @@ from classes.bacteria import Bacteria
 from classes.antibiotico import Antibiotico
 from classes.super_bacteria import SuperBacteria
 from views.game_over_view import GameOverView
+from classes.explosao import Explosao
 
 
 # Mapa da fase: cada linha tem 18 colunas de 50 px (900 px de largura).
@@ -43,6 +49,29 @@ class GameView(arcade.View):
 
     def __init__(self):
         super().__init__()
+
+        # Temporizadores dos efeitos de colisão
+        self.tempo_invencivel = 0.0
+        self.tempo_flash = 0.0
+        self.tempo_tremor = 0.0
+
+        # Câmera usada para o tremor
+        self.camera = arcade.Camera2D()
+
+        # Lista de efeitos visuais
+        self.sprite_efeitos = arcade.SpriteList()
+
+        # Carrega a spritesheet da explosão
+        folha_explosao = arcade.load_spritesheet(
+            "sprites/explosao_768x128-.png"
+        )
+
+        # Separa a imagem em 6 quadros de 128 x 128 pixels
+        self.quadros_explosao = folha_explosao.get_texture_grid(
+            size=(128, 128),
+            columns=6,
+            count=6
+        )
 
         # Fundo
         self.background_list = arcade.SpriteList()
@@ -115,6 +144,8 @@ class GameView(arcade.View):
         self.sofreu_dano = False
 
 
+
+
     def construir_mapa(self):
         """Lê o MAPA e cria um Bloco para cada '#'."""
         total_linhas = len(MAPA)
@@ -160,6 +191,9 @@ class GameView(arcade.View):
 
         self.clear()
 
+         # Mundo do jogo: a câmera permite o tremor
+        self.camera.use()
+
         self.background_list.draw()
         self.bloco_list.draw()
         self.vitamina_list.draw()
@@ -167,6 +201,26 @@ class GameView(arcade.View):
         self.bacteria_list.draw()
         self.super_bacteria_list.draw()
         self.player_list.draw()
+        self.sprite_efeitos.draw()
+
+        # Câmera fixa: flash e HUD não tremem
+        self.window.default_camera.use()
+
+        # Flash vermelho que desaparece suavemente
+        if self.tempo_flash > 0:
+            alpha = int(
+                120 * self.tempo_flash / TEMPO_FLASH
+            )
+
+            arcade.draw_rect_filled(
+                arcade.XYWH(
+                LARGURA / 2,
+                ALTURA / 2,
+                LARGURA,
+                ALTURA
+                ),
+                (255, 0, 0, alpha)
+            )
 
         arcade.draw_text(
             f"Pontuação: {self.pontos}",
@@ -197,10 +251,62 @@ class GameView(arcade.View):
                 anchor_x="center"
             )
 
-    def on_update(self, delta_time):
+    def ativar_efeitos_colisao(self, inimigo, escala = 0.7):
+          # Ponto médio entre o jogador e o inimigo
+            x = (self.player.center_x + inimigo.center_x) / 2
+            y = (self.player.center_y + inimigo.center_y) / 2
 
+         # Explosão
+            explosao = Explosao(
+                x=x,
+                y=y,
+                quadros=self.quadros_explosao,
+                scale=escala
+            )
+            self.sprite_efeitos.append(explosao)
+
+             # Ativa os três efeitos
+            self.tempo_invencivel = TEMPO_INVENCIVEL
+            self.tempo_flash = TEMPO_FLASH
+            self.tempo_tremor = TEMPO_TREMOR
+        
+
+    def on_update(self, delta_time):
         # Atualiza o cronômetro
         self.tempo_jogo += delta_time
+
+        # Atualiza os efeitos
+        self.tempo_invencivel = max(
+            0.0, self.tempo_invencivel - delta_time
+        )
+        self.tempo_flash = max(
+            0.0, self.tempo_flash - delta_time
+        )
+        self.tempo_tremor = max(
+            0.0, self.tempo_tremor - delta_time
+        )
+
+        # Faz o aviso desaparecer depois de 0,5 segundo
+        if self.alerta_tempo > 0:
+            self.alerta_tempo -= delta_time
+
+        # Tremor: diminui a intensidade até a tela voltar ao centro
+        if self.tempo_tremor > 0:
+            forca = (
+                INTENSIDADE_TREMOR
+                * self.tempo_tremor
+                / TEMPO_TREMOR
+            )
+
+            self.camera.position = (
+                LARGURA / 2 + random.uniform(-forca, forca),
+                ALTURA / 2 + random.uniform(-forca, forca),
+            )
+        else:
+            self.camera.position = (
+                LARGURA / 2,
+                ALTURA / 2
+            )
 
         # Física primeiro (move o jogador), depois a animação
         self.physics_engine.update()
@@ -209,6 +315,7 @@ class GameView(arcade.View):
         self.bacteria_list.update()
         self.antibiotico_list.update()
         self.super_bacteria_list.update()
+        self.sprite_efeitos.update(delta_time)
 
 
         # Coleta vitaminas
@@ -250,42 +357,84 @@ class GameView(arcade.View):
             self.bacteria_list
         )
 
-        if len(bacterias) > 0:
+        
+       
+        # Colisão com bactérias
+        bacterias = arcade.check_for_collision_with_list(
+            self.player,
+            self.bacteria_list
+        )
 
-            # Só perde ponto quando começa a colisão
+        if len(bacterias) > 0:
+            # Aplica o dano apenas no início da colisão
             if not self.colidindo_bacteria:
                 self.pontos -= 1
                 self.alerta_tempo = 0.5
                 self.colidindo_bacteria = True
                 self.sofreu_dano = True
 
+                # Cria a explosão no ponto da colisão
+                bacteria = bacterias[0]
+                self.ativar_efeitos_colisao(bacteria, escala=0.7)
+
+                explosao = Explosao(
+                    x=(self.player.center_x + bacteria.center_x) / 2,
+                    y=(self.player.center_y + bacteria.center_y) / 2,
+                    quadros=self.quadros_explosao,
+                    scale=0.7
+                )
+
+                self.sprite_efeitos.append(explosao)
+
         else:
-            # Quando o jogador sair da colisão,
-            # poderá perder ponto novamente na próxima colisão
+            # Libera um novo dano quando o jogador se afasta
             self.colidindo_bacteria = False
 
-        #Faz o alerta desaparecer
-        if self.alerta_tempo > 0:
-            self.alerta_tempo -= delta_time
 
-        #colisão com super bactéria
-        super_bacteria = arcade.check_for_collision_with_list(
+
+        
+        # Colisão com a super bactéria
+        super_bacterias = arcade.check_for_collision_with_list(
             self.player,
             self.super_bacteria_list
         )
 
-        if len(super_bacteria) > 0:
-
+        if len(super_bacterias) > 0:
             if not self.colidindo_super:
                 self.pontos -= 1
+                self.alerta_tempo = 0.5
                 self.colidindo_super = True
                 self.sofreu_dano = True
 
-                for inimigo in super_bacteria:
+                # Cria a explosão no ponto da colisão
+                inimigo = super_bacterias[0]
+                self.ativar_efeitos_colisao(inimigo, escala=1.0)
+                explosao = Explosao(
+                    x=(self.player.center_x + inimigo.center_x) / 2,
+                    y=(self.player.center_y + inimigo.center_y) / 2,
+                    quadros=self.quadros_explosao,
+                    scale=1.0
+                )
+
+                self.sprite_efeitos.append(explosao)
+
+                # Afasta a super bactéria após a colisão
+                for inimigo in super_bacterias:
                     inimigo.teleportar()
 
         else:
             self.colidindo_super = False
+
+        # Pisca enquanto estiver invencível
+        if self.tempo_invencivel > 0:
+            if int(self.tempo_invencivel * 10) % 2 == 0:
+                self.player.alpha = 80
+            else:
+                self.player.alpha = 255
+        else:
+            self.player.alpha = 255
+   
+
 
     def on_key_press(self, key, modifiers):
 
